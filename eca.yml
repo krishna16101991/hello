@@ -1,6 +1,6 @@
 ---
 - name: execute script and get result back.
-  hosts: ecadr
+  hosts: all
   vars: 
       variable1: eca
   tasks:
