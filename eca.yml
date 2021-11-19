@@ -1,0 +1,41 @@
+---
+- name: execute script and get result back.
+  hosts: ecadr
+  vars: 
+      variable1: eca
+  tasks:
+    - name: Execute the script
+      #shell:  
+      # chdir: script
+      # cmd: eca.sh
+      shell: sh script/eca.sh
+      failed_when: false
+      register: mypass
+    - name: Print the script result
+      debug:
+        msg: "{{ mypass.stdout}}"
+  #    when: mypass.stdout.find("Status")=="Status"
+    # - name: Print the generated password
+      # debug:
+        # msg: "{{ mypass.stdout }} {{ mypass.stdout.find('Status')}}"
+        
+    - set_fact:
+        my_var: "{{ mypass.stdout | regex_search('([0-9]+)')}}"
+    - name: Print value
+      debug:
+        var: my_var
+        
+  # - debug: 
+        # msg: "{{ item }}"
+      # with_items: "{{ mypass.dict }}"
+    - name: To ping to Slack to send message
+      slack:
+         token: T4W1S5P34/B02MEUC40E9/l2MFto4HqO4YQAshibqrksaN
+         domain: hooks.slack.com
+         channel: 'ansible_eca_test'
+         msg: "{{mypass.stdout}}"
+      when: (my_var | int) >= 100
+            
+             
+   
+
